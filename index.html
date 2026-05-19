@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Multi-Vendor FCL Landed Cost Engine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Enterprise Multi-Vendor FCL Landed Cost Engine</h1>
+        <p class="subtitle">Global trade infrastructure modeling with live Forex, FTA tracking, and dynamic side-by-side vendor comparisons</p>
+        
+        <form id="calc-form">
+            <div class="form-section">
+                <h3>Product & Supply Chain Profile</h3>
+                <div class="form-grid layout-3-col">
+                    <div class="input-group">
+                        <label for="product-name">Product Name / SKU</label>
+                        <input type="text" id="product-name" placeholder="e.g., Solar Inverters" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="vendor-name">Vendor Name</label>
+                        <input type="text" id="vendor-name" placeholder="e.g., Apex Sourcing Ltd" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="hs-code">HS Code (6 to 10 digits)</label>
+                        <input type="text" id="hs-code" placeholder="e.g., 8504.40" required>
+                    </div>
+                </div>
+
+                <div class="form-grid layout-3-col">
+                    <div class="input-group">
+                        <label for="country-origin">Country of Origin</label>
+                        <input type="text" id="country-origin" placeholder="e.g., China, Italy, Mexico" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="country-destination">Country of Destination</label>
+                        <input type="text" id="country-destination" placeholder="e.g., Australia, United States, France" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="incoterm">Incoterm Selection</label>
+                        <select id="incoterm" required>
+                            <option value="FOB">FOB - Free On Board</option>
+                            <option value="EXW">EXW - Ex Works (Adds 5% Export Fee)</option>
+                            <option value="CFR">CFR - Cost and Freight</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid layout-2-col" id="port-fields-box">
+                    <div class="input-group">
+                        <label for="port-origin">Port of Origin</label>
+                        <input type="text" id="port-origin" placeholder="e.g., Shanghai (CNSHA)">
+                    </div>
+                    <div class="input-group">
+                        <label for="port-destination">Port of Destination</label>
+                        <input type="text" id="port-destination" placeholder="e.g., Sydney (AUSYD)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Fleet Specification & Final Delivery Point</h3>
+                <div class="form-grid layout-3-col structural-bg">
+                    <div class="input-group">
+                        <label for="container-spec">Container Specification</label>
+                        <select id="container-spec" required>
+                            <option value="20FT">20ft Standard Container (1 TEU)</option>
+                            <option value="40FT">40ft Standard Container (1 FEU)</option>
+                            <option value="40HC">40ft High-Cube Container</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="container-qty">Volume of Containers (FCL Qty)</label>
+                        <input type="number" id="container-qty" min="1" value="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="dest-zip">Delivery Point Zip/Postal Code</label>
+                        <input type="text" id="dest-zip" placeholder="e.g., 2000, 90210, 75001" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Commercial Pricing & UOM Matrix</h3>
+                <div class="form-grid layout-2-col">
+                    <div class="sub-column">
+                        <h4>Sourcing Baseline (As Invoiced)</h4>
+                        <div class="input-group">
+                            <label for="source-currency">Vendor Invoice Currency</label>
+                            <select id="source-currency" class="currency-dropdown"></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="source-uom">Vendor Invoice UOM</label>
+                            <select id="source-uom" class="uom-dropdown"></select>
+                        </div>
+                    </div>
+                    <div class="sub-column">
+                        <h4>Corporate Target (As Evaluated)</h4>
+                        <div class="input-group">
+                            <label for="target-currency">Target Evaluation Currency</label>
+                            <select id="target-currency" class="currency-dropdown"></select>
+                        </div>
+                        <div class="input-group">
+                            <label for="target-uom">Target Evaluation UOM</label>
+                            <select id="target-uom" class="uom-dropdown"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid layout-2-col structural-bg" style="margin-top:15px;">
+                    <div class="input-group">
+                        <label for="quantity">Cargo Mass Total Volume <span class="lbl-src-uom">(Invoice Units)</span></label>
+                        <input type="number" id="quantity" min="1" placeholder="Gross sum loaded across all FCLs" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="uom-ratio">Conversion Ratio: Target Units per Invoiced Unit <small id="ratio-status-note">(Automated)</small></label>
+                        <input type="number" id="uom-ratio" min="0.00001" step="any" value="24" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Financial Cost Sheet Fields</h3>
+                <div class="form-grid layout-3-col">
+                    <div class="input-group">
+                        <label for="fob-cost">Product Price <span class="lbl-src-curr-symbol">($)</span> <small>per Invoice UOM</small></label>
+                        <input type="number" id="fob-cost" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="handling-fee">Est. Destination Handling Fee <span class="lbl-src-curr-symbol">($)</span> <small>per FCL</small></label>
+                        <input type="number" id="handling-fee" step="0.01" min="0" placeholder="Local port clearance/thc">
+                    </div>
+                    <div class="input-group">
+                        <label for="duty-rate">Customs Duty Rate (%) <small id="duty-status-note">(Auto-calculated via HS)</small></label>
+                        <input type="number" id="duty-rate" step="0.01" min="0" max="100" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div id="freight-inputs-wrapper" class="form-grid layout-2-col">
+                    <div class="input-group">
+                        <label for="ocean-freight">Ocean Freight Cost <span class="lbl-src-curr-symbol">($)</span> <small id="ocean-status-note">(Auto-estimated port-to-port)</small></label>
+                        <input type="number" id="ocean-freight" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="input-group">
+                        <label for="inland-freight">Inland Intermodal Haulage Cost <span class="lbl-src-curr-symbol">($)</span> <small id="inland-status-note">(Auto via Postal API)</small></label>
+                        <input type="number" id="inland-freight" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons-container">
+                <button type="button" id="calculate-btn">Process & Save Vendor Cost Profile</button>
+                <button type="button" id="reset-form-btn" class="form-reset-secondary">Reset Current Form</button>
+            </div>
+        </form>
+
+        <div id="matrix-card" class="results-card hidden" style="margin-top: 40px;">
+            <div class="results-header">
+                <h2>Landed Cost Strategic Master Matrix</h2>
+                <button type="button" id="clear-matrix-btn" class="clear-btn">Clear Matrix Data</button>
+            </div>
+            <p class="summary-meta-text">Comparative analysis normalized into your corporate evaluation currency parameters. Click any colored <strong>Landed Rate / Unit</strong> text node link to pop up its exact analytical deep-dive computation summary sheets.</p>
+            
+            <div class="table-wrapper">
+                <table id="vendor-matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Product / SKU</th>
+                            <th>Incoterm (Origin)</th>
+                            <th>FCL Profile</th>
+                            <th>Cargo Value</th>
+                            <th>Logistics & Duties</th>
+                            <th>Total Landed Cost</th>
+                            <th>Landed Rate / Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="breakdown-modal" class="modal-overlay hidden">
+        <div class="modal-content results-card deep-dive-card">
+            <div class="results-header">
+                <h2>Audit Computation Deep-Dive</h2>
+                <span id="close-modal-btn" class="close-modal-x">&times;</span>
+            </div>
+            <p class="summary-meta-text">
+                Active Analysis: <strong id="res-meta-title">Product Name</strong> | 
+                Vendor: <strong id="res-meta-vendor">-</strong> | 
+                Profile: <span id="res-meta-fcl">-</span> x <span id="res-meta-spec">-</span> Fleet (<span id="res-meta-incoterm">-</span>)
+            </p>
+            <p class="summary-meta-text" style="margin-top:-10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 12px;">
+                Destination Hub: <span id="res-meta-loc-desc">-</span>
+            </p>
+            
+            <div class="result-row">
+                <span>Gross Cargo Base Invoice Value:</span>
+                <span id="res-total-fob" class="value"></span>
+            </div>
+            <div class="result-row hidden" id="res-row-export">
+                <span>EXW Origin Export Processing Fee (5%):</span>
+                <span id="res-export-fee" class="value"></span>
+            </div>
+            <div class="result-row" id="res-row-ocean">
+                <span>Ocean Freight Logistics Port-to-Port Charges:</span>
+                <span id="res-ocean" class="value"></span>
+            </div>
+            <div class="result-row">
+                <span>Terminal Handling (THC) & Port Intake Fees:</span>
+                <span id="res-handling" class="value"></span>
+            </div>
+            <div class="result-row">
+                <span>Inland Intermodal Port-to-Door Container Haulage:</span>
+                <span id="res-inland" class="value"></span>
+            </div>
+            <div class="result-row">
+                <span>Customs Border Tariffs / Duties Financial Liability:</span>
+                <span id="res-duty" class="value"></span>
+            </div>
+            <div class="result-row hidden" id="res-row-gst">
+                <span>Australian GST Liability (10% Taxable Importation Formula):</span>
+                <span id="res-gst" class="value"></span>
+            </div>
+            
+            <div class="result-divider"></div>
+            
+            <div class="result-row total-row">
+                <span>Aggregated Total FCL Landed Cost Framework:</span>
+                <span id="res-total-landed" class="value"></span>
+            </div>
+            <div class="result-row unit-row">
+                <span>Amortized Landed Value Unit Rate:</span>
+                <span id="res-unit-landed" class="value"></span>
+            </div>
+            <div class="uom-conversion-disclosure">
+                * Based on a target execution volume of <span id="res-total-target-units">0</span> total evaluation units delivered.
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
