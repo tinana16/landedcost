@@ -97,11 +97,13 @@ input:focus, select:focus {
     margin-bottom: 15px;
 }
 
+.layout-4-col { grid-template-columns: repeat(4, 1fr); }
 .layout-3-col { grid-template-columns: repeat(3, 1fr); }
 .layout-2-col { grid-template-columns: repeat(2, 1fr); }
+.layout-1-col { grid-template-columns: 1fr; }
 
 @media (max-width: 768px) {
-    .layout-3-col, .layout-2-col { grid-template-columns: 1fr; }
+    .layout-4-col, .layout-3-col, .layout-2-col { grid-template-columns: 1fr; }
 }
 
 .structural-bg {
